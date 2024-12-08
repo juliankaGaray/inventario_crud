@@ -1,0 +1,84 @@
+from django.http import HttpResponse
+from xhtml2pdf import pisa
+from io import BytesIO
+
+def exportar_equipo_pdf_directo(request, equipo_id):
+    # Obtener el equipo desde la base de datos
+    equipo = Equipo.objects.get(id=equipo_id)
+
+    # HTML como cadena (con estilos inline)
+    html = f"""
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <title>Detalles del Equipo</title>
+        <style>
+            body {{
+                font-family: Arial, sans-serif;
+                margin: 30px;
+            }}
+            h1 {{
+                text-align: center;
+                font-size: 22px;
+            }}
+            .details-label {{
+                font-weight: bold;
+                margin-right: 10px;
+            }}
+            .details-value {{
+                color: #555;
+            }}
+            .section {{
+                margin-bottom: 15px;
+            }}
+        </style>
+    </head>
+    <body>
+
+        <h1>Detalles del Equipo - Número de Placa: {equipo.numero_placa}</h1>
+
+        <div class="section">
+            <p><span class="details-label">Tipo de Equipo:</span><span class="details-value">{equipo.tipo_equipo}</span></p>
+        </div>
+        <div class="section">
+            <p><span class="details-label">Marca:</span><span class="details-value">{equipo.marca}</span></p>
+        </div>
+        <div class="section">
+            <p><span class="details-label">Modelo:</span><span class="details-value">{equipo.modelo}</span></p>
+        </div>
+        <div class="section">
+            <p><span class="details-label">Fecha de Ingreso:</span><span class="details-value">{equipo.fecha_ingreso}</span></p>
+        </div>
+        <div class="section">
+            <p><span class="details-label">Estado:</span><span class="details-value">{equipo.estado}</span></p>
+        </div>
+        <div class="section">
+            <p><span class="details-label">Ubicación:</span><span class="details-value">{equipo.ubicacion}</span></p>
+        </div>
+        <div class="section">
+            <p><span class="details-label">Nota:</span><span class="details-value">{equipo.nota}</span></p>
+        </div>
+        <div class="section">
+            <p><span class="details-label">Disco Duro:</span><span class="details-value">{equipo.disco_duro}</span></p>
+        </div>
+        <div class="section">
+            <p><span class="details-label">Sistema Operativo:</span><span class="details-value">{equipo.sistema_operativo}</span></p>
+        </div>
+
+    </body>
+    </html>
+    """
+
+    # Crear el PDF
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = f'attachment; filename="equipo_{equipo.numero_placa}.pdf"'
+    result = BytesIO()
+    pdf = pisa.CreatePDF(BytesIO(html.encode('utf-8')), dest=result)
+
+    # Verificar errores
+    if not pdf.err:
+        response.write(result.getvalue())
+        return response
+    else:
+        return HttpResponse('Error al generar el PDF', status=500)

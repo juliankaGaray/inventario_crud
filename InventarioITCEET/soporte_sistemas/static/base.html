@@ -1,0 +1,39 @@
+<!-- base.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mi Aplicación{% endblock %}</title>
+    <!-- Vincula tus archivos de CSS globales -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+
+    <!-- Encabezado común -->
+    <header>
+        <nav>
+            <ul>
+                <li><a href="{% url 'home' %}">Inicio</a></li>
+                <li><a href="{% url 'about' %}">Acerca de</a></li>
+                <li><a href="{% url 'contact' %}">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Aquí se carga el contenido de las páginas que extienden base.html -->
+    <main>
+        {% block content %}
+        <!-- Este contenido será reemplazado por las páginas hijas -->
+        {% endblock %}
+    </main>
+
+    <!-- Pie de página común -->
+    <footer>
+        <p>&copy; 2024 Mi Aplicación. Todos los derechos reservados.</p>
+    </footer>
+
+    <!-- Vincula tus archivos JavaScript -->
+    <script src="{% static 'js/scripts.js' %}"></script>
+</body>
+</html>
